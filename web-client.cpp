@@ -17,17 +17,20 @@ using namespace std;
 #define TM_BUF_SIZE 6000
 //#define TM_PACKETS_TO_SEND 10
 //#define TM_DEST_ADDR “10.129.36.52”
-#define TM_DEST_PORT 4000
+#define TM_DEST_PORT 4001
 #define BUFFER_SIZE 5000
 
 
 int main(int argc, char *argv[])
 {
-    /* ( argc != 2){
+    if ( argc != 2){
         cout << "usage: " << argv[0] << "<url> \n";
-    }else{
-        char url[BUFFER_SIZE] = argv[1];
-    }*/
+    }
+        char url[BUFFER_SIZE];
+        strcpy(url,argv[1]);
+    string str_url(url);
+    
+    cout << url;
     //std::cerr << "web client is not implemented yet" << std::endl;
     // do your stuff here! or not if you don't want to.
     //char buffer[TM_BUF_SIZE];
@@ -78,53 +81,56 @@ int main(int argc, char *argv[])
     string input;
     Request_HTTP request;
     
-    
+    int i =1;
     while(1){
+        if(i == 1){
         
-
-    while(!end){
-        memset(buffer, '\0', sizeof(buffer));
-        
-        cout << "send ";
-        cin >> request.url_request;
-        //request.url = "http://" + directory + ":" + port +"/" + url;
-        request.newMessage();
-        
-        long sendCheck = send(clientSocket, request.message_request.c_str(), request.message_request.size(), 0);
-        
-        if(sendCheck < 0){
-            perror("send");
-            return 4;
-        }
-        
-        
-        long recvCheck = recv(clientSocket, buffer, TM_BUF_SIZE, 0);
-        if(recvCheck == -1 ){
-            perror("receive");
-            return 5;
-        }
-        cout << "Received " << buffer << "\n";
-        int i = 0;//where in response string
-        int j =0;//where in substring buffer
-        char buf_response[TM_BUF_SIZE];
-        while(buffer[i] != ' ' && j< TM_BUF_SIZE){
-            buf_response[j] = buffer[i];
+        while(!end){
+            memset(buffer, '\0', sizeof(buffer));
+            
+            cout << "send ";
+            //cin >> request.url_request;
+            //request.url = "http://" + directory + ":" + port +"/" + url;
+            request.url_request = string("http://directory:4000/") + url;
+            request.newMessage();
+            
+            long sendCheck = send(clientSocket, request.message_request.c_str(), request.message_request.size(), 0);
+            
+            if(sendCheck < 0){
+                perror("send");
+                return 4;
+            }
+            
+            
+            long recvCheck = recv(clientSocket, buffer, TM_BUF_SIZE, 0);
+            if(recvCheck == -1 ){
+                perror("receive");
+                return 5;
+            }
+            cout << "Received " << buffer << "\n";
+            int i = 0;//where in response string
+            int j =0;//where in substring buffer
+            char buf_response[TM_BUF_SIZE];
+            while(buffer[i] != ' ' && j< TM_BUF_SIZE){
+                buf_response[j] = buffer[i];
+                i++;
+                j++;
+            }
+            memset(buf_response, '\0', TM_BUF_SIZE);
+            j = 0;
             i++;
-            j++;
+            while(buffer[i] != '\r' && j<TM_BUF_SIZE){
+                buf_response[j] = buffer[i];
+                i++;
+                j++;
+            }
+            string responseCode = string(buf_response);
+            cout << responseCode << endl;
+            //cout << request.htmlBody
+            i--;
+            break;
         }
-        memset(buf_response, '\0', TM_BUF_SIZE);
-        j = 0;
-        i++;
-        while(buffer[i] != '\r' && j<TM_BUF_SIZE){
-            buf_response[j] = buffer[i];
-            i++;
-            j++;
-        }
-        string responseCode = string(buf_response);
-        cout << responseCode << endl;
-        //cout << request.htmlBody
-        
-    }//end while end
+        }//end while end
         
         close(clientSocket);
     }//end while 1
