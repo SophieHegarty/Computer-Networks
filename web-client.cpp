@@ -1,3 +1,10 @@
+//
+//  web-client.cpp
+//  Networks
+//
+//  Created by Sophie Hegarty on 8/2/2018.
+//  Copyright © 2017 Sophie Hegarty. All rights reserved.
+//
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -30,7 +37,7 @@ int main(int argc, char *argv[])
         strcpy(url,argv[1]);
     string str_url(url);
     
-    cout << url;
+    //cout << url;
     //std::cerr << "web client is not implemented yet" << std::endl;
     // do your stuff here! or not if you don't want to.
     //char buffer[TM_BUF_SIZE];
