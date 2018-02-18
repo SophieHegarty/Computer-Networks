@@ -53,14 +53,16 @@ int main(int argc, char *argv[])
         strcpy(dir,argv[3]);
     string host_str(host);
     string dir_str(dir);
-    cout << host << " " << DEST_PORT << " " << dir << endl;
+    
+    
+    //cout << host << " " << DEST_PORT << " " << dir << endl;
     //std::cerr << "web server is not implemented yet" << std::endl;
     // do your stuff here! or not if you don't want to.
     int listen_socket, client_socket;
     struct sockaddr_in source_address;
     struct sockaddr_in dest_address;
     int error = -1;
-    
+    pid_t childpid;
     
     //address family
     dest_address.sin_family = AF_INET;
@@ -124,6 +126,9 @@ int main(int argc, char *argv[])
         char buffer[BUFFER_SIZE] = {0};
         //string stringstream;
         
+        if((childpid = fork()) == 0){
+            close(listen_socket);
+            
         while(!end){
             memset(buffer, '\0', sizeof(buffer));
             
@@ -183,7 +188,7 @@ int main(int argc, char *argv[])
                 return error;
             }
             //memset(responseMessage, '\0', sizeof(responseMessage);
-            
+          }
         }
         close(client_socket);
         
