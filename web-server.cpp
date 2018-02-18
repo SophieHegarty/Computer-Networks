@@ -15,15 +15,16 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
-//#inculde <string.h>
 #include "response.h"
 #include "response.cpp"
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 #define BUFFER_SIZE 60
-//#define DEST_PORT 4000
+//#define DEST_PORT 4001
 using namespace std;
 
 /*struct sockaddr_in
@@ -35,25 +36,25 @@ using namespace std;
  };*/
 
 /* struct data{
- add everything in here for the threading 
+ add everything in here for the threading
  }
  */
 
 int main(int argc, char *argv[])
 {
+    
     if ( argc != 4){
         cout << "usage: " << argv[0] << "<host> <port> <directory>\n";
-    }else{
-        char host[BUFFER_SIZE] = argv[1];
-        int DEST_PORT = argv[2];
-        char dir[BUFFER_SIZE] = argv[3];
     }
-    
-    pid_t childpid;
-    /*NEED TO APPLY ARGUMENTS TO THE SERVER, EG HOW TO ADD HOST TO THE MESSAGE?
-     HOW TO ADD PORT TO CLIENT ALSO? IS NECESSARY? 
-     HOW TO ADD DIRECTORY TO THE URL THING
-     */
+    char host[BUFFER_SIZE];
+    strcpy(host,argv[1]);
+    int DEST_PORT;
+    DEST_PORT = atoi(argv[2]);
+    char dir[BUFFER_SIZE];
+    strcpy(dir,argv[3]);
+    string host_str(host);
+    string dir_str(dir);
+    cout << host << " " << DEST_PORT << " " << dir << endl;
     //std::cerr << "web server is not implemented yet" << std::endl;
     // do your stuff here! or not if you don't want to.
     int listen_socket, client_socket;
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in dest_address;
     int error = -1;
     
-
+    
     //address family
     dest_address.sin_family = AF_INET;
     
@@ -86,10 +87,10 @@ int main(int argc, char *argv[])
     //bind socket
     bind(listen_socket, (struct sockaddr*)&dest_address, sizeof(dest_address));
     /*if(bind(listen_socket, (struct sockaddr*)&dest_address, sizeof(dest_address)) == -1){
-        perror("bind");
-        error = 2;
-        return error;
-    };*/
+     perror("bind");
+     error = 2;
+     return error;
+     };*/
     
     int listenCheck = listen(listen_socket, 1);
     
@@ -97,115 +98,116 @@ int main(int argc, char *argv[])
         cout << "Listening on port " << DEST_PORT << "\n";
     }
     
-       //source addressis is  client address
-       //accept connection
-       while(1){//until end
-           
-           
-           socklen_t client_size = sizeof(source_address);
-           
-           client_socket = accept(listen_socket, (struct sockaddr*)&source_address, &client_size);
-           //error checking
-           if (client_socket == -1) {
-               perror("accept");
-               error = 4;
-               return error;
-           }
-           
-           char ip_string[INET_ADDRSTRLEN] = {'\0'};
-           //inet_ntoa instead of inet_ntop
-           inet_ntop(source_address.sin_family, &source_address.sin_addr, ip_string, sizeof(ip_string));
-           cout <<" Connection being accepted from " << ip_string << ":"  << ntohs(source_address.sin_port) << "\n";
-           
-           //read/write
-           ResponseHTTP response;
-           
-           bool end = false;
-           char buffer[BUFFER_SIZE] = {0};
-           //string stringstream;
-           
-           if((childpid = fork()) == 0){
-               close(listen_socket);
-           
-           while(!end){
-               memset(buffer, '\0', sizeof(buffer));
-               
-               
-               if(recv(client_socket, buffer, BUFFER_SIZE, 0) == -1){
-                   perror("recv");
-                   error = 5;
-                   return error;
-               }
-               
-               cout << buffer << "\n";
-               response.requestMessage(string(buffer));
-               response.decodeMessage();
-               response.decodeURL();
-               
-               const char *directory = response.directory.c_str();
-               ifstream file;
-               file.open(directory);
-               
-               
-               
-               if(!file){
-                   cout << "File does not exsist 🙃\n";
-                   response.newerrorCode("404 File Not Found ");
-                   
-                   
-               }else{
-                   string fileLine;
-                   string fileContents;
-                   while(!file.eof()){
-                       getline(file,fileLine);
-                       //cout << fileLine << "\n";
-                       fileContents= fileContents + fileLine + "\n";
-                       
-                   }
-                   cout << "Size of file is: " << fileContents.length() << endl;
-                   file.close();
-                    response.newhtmlBody(fileContents);
-                   //response.newhtmlBody(file)
-                   //cout << "Contents:" << fileContents << endl;
-                   
-                   cout << "File does exsist\n";
-                   response.newerrorCode("200 OK ");
-                   
-               }
-               
-               response.newMessage();
-               const char *responseMessage = response.message_response.c_str();
-               if(send(client_socket, responseMessage , strlen(responseMessage), 0) == -1){
-                   perror("send");
-                   error = 6;
-                   return error;
-               }
-               //memset(responseMessage, '\0', sizeof(responseMessage);
+    //source addressis is  client address
+    //accept connection
+    while(1){//until end
+        
+        
+        socklen_t client_size = sizeof(source_address);
+        
+        client_socket = accept(listen_socket, (struct sockaddr*)&source_address, &client_size);
+        //error checking
+        if (client_socket == -1) {
+            perror("accept");
+            error = 4;
+            return error;
+        }
+        
+        char ip_string[INET_ADDRSTRLEN] = {'\0'};
+        //inet_ntoa instead of inet_ntop
+        inet_ntop(source_address.sin_family, &source_address.sin_addr, ip_string, sizeof(ip_string));
+        cout <<" Connection being accepted from " << ip_string << ":"  << ntohs(source_address.sin_port) << "\n";
+        
+        //read/write
+        ResponseHTTP response;
+        
+        bool end = false;
+        char buffer[BUFFER_SIZE] = {0};
+        //string stringstream;
+        
+        while(!end){
+            memset(buffer, '\0', sizeof(buffer));
+            
+            
+            if(recv(client_socket, buffer, BUFFER_SIZE, 0) == -1){
+                perror("recv");
+                error = 5;
+                return error;
             }
-           }
-           close(client_socket);
-           
-           
-           //int port = 4000;
-           //char ip_address = "127.0.0.1";
-           
-           
-           //int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-           
-           /*struct sockaddr_in address;
-            address.sin_family = AF_INET;
-            adress.sin_port = htons(port);
-            //change below to get IP address automatically
-            adress.sin_addr.s_addr = inet_addr(ip_address);
-            memset(address.sin_zero, '\0', sizeof(address.sin_zero));*/
-           
-           
-           
-           
-           
-           //create socket
-           
-           
-           
-       }
+            
+            cout << buffer << "\n";
+            response.requestMessage(string(buffer));
+            response.decodeMessage();
+            response.decodeURL();
+            response.url_request = host_str;
+            string direct = response.directory;
+            string newDirectory = dir_str + "/" + direct;
+            cout << "dircteory: " << newDirectory;
+            
+            const char *directory = newDirectory.c_str();
+            ifstream file;
+            file.open(directory);
+            
+            
+            
+            if(!file){
+                //cout << "File does not exsist 🙃\n";
+                response.newerrorCode("404 File Not Found ");
+                
+                
+            }else{
+                string fileLine;
+                string fileContents;
+                while(!file.eof()){
+                    getline(file,fileLine);
+                    //cout << fileLine << "\n";
+                    fileContents= fileContents + fileLine + "\n";
+                    
+                }
+                //cout << "Size of file is: " << fileContents.length() << endl;
+                file.close();
+                response.newhtmlBody(fileContents);
+                //response.newhtmlBody(file)
+                //cout << "Contents:" << fileContents << endl;
+                
+                //cout << "File does exsist\n";
+                response.newerrorCode("200 OK ");
+                
+            }
+            
+            response.newMessage();
+            const char *responseMessage = response.message_response.c_str();
+            if(send(client_socket, responseMessage , strlen(responseMessage), 0) == -1){
+                perror("send");
+                error = 6;
+                return error;
+            }
+            //memset(responseMessage, '\0', sizeof(responseMessage);
+            
+        }
+        close(client_socket);
+        
+        
+        //int port = 4000;
+        //char ip_address = "127.0.0.1";
+        
+        
+        //int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        
+        /*struct sockaddr_in address;
+         address.sin_family = AF_INET;
+         adress.sin_port = htons(port);
+         //change below to get IP address automatically
+         adress.sin_addr.s_addr = inet_addr(ip_address);
+         memset(address.sin_zero, '\0', sizeof(address.sin_zero));*/
+        
+        
+        
+        
+        
+        //create socket
+        
+        
+        
+    }
 }
