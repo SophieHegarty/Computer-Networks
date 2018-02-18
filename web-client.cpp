@@ -23,11 +23,11 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if ( argc != 2){
+    /* ( argc != 2){
         cout << "usage: " << argv[0] << "<url> \n";
     }else{
         char url[BUFFER_SIZE] = argv[1];
-    }
+    }*/
     //std::cerr << "web client is not implemented yet" << std::endl;
     // do your stuff here! or not if you don't want to.
     //char buffer[TM_BUF_SIZE];
