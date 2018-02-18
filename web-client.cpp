@@ -81,9 +81,9 @@ int main(int argc, char *argv[])
     string input;
     Request_HTTP request;
     
-    int i =1;
+    
     while(1){
-        if(i == 1){
+        
         
         while(!end){
             memset(buffer, '\0', sizeof(buffer));
@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
             cout << "send ";
             //cin >> request.url_request;
             //request.url = "http://" + directory + ":" + port +"/" + url;
-            request.url_request = string("http://directory:4000/") + url;
+            //request.url_request = string("http://directory:4000/") + url;
+            request.url_request = url;
             request.newMessage();
             
             long sendCheck = send(clientSocket, request.message_request.c_str(), request.message_request.size(), 0);
@@ -127,9 +128,7 @@ int main(int argc, char *argv[])
             string responseCode = string(buf_response);
             cout << responseCode << endl;
             //cout << request.htmlBody
-            i--;
             break;
-        }
         }//end while end
         
         close(clientSocket);
