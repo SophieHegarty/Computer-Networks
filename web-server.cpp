@@ -43,11 +43,11 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     if ( argc != 4){
-        cout << "usage: " << argc[0] << "<host> <port> <directory>\n";
+        cout << "usage: " << argv[0] << "<host> <port> <directory>\n";
     }else{
-        char host[BUFFER_SIZE] = argc[1];
-        int DEST_PORT = argc[2];
-        char dir[BUFFER_SIZE] = argc[3];
+        char host[BUFFER_SIZE] = argv[1];
+        int DEST_PORT = argv[2];
+        char dir[BUFFER_SIZE] = argv[3];
     }
     /*NEED TO APPLY ARGUMENTS TO THE SERVER, EG HOW TO ADD HOST TO THE MESSAGE?
      HOW TO ADD PORT TO CLIENT ALSO? IS NECESSARY? 
