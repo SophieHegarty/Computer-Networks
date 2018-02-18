@@ -15,10 +15,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
+//#inculde <string.h>
 #include "response.h"
 #include "response.cpp"
-
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -49,6 +48,8 @@ int main(int argc, char *argv[])
         int DEST_PORT = argv[2];
         char dir[BUFFER_SIZE] = argv[3];
     }
+    
+    pid_t childpid;
     /*NEED TO APPLY ARGUMENTS TO THE SERVER, EG HOW TO ADD HOST TO THE MESSAGE?
      HOW TO ADD PORT TO CLIENT ALSO? IS NECESSARY? 
      HOW TO ADD DIRECTORY TO THE URL THING
@@ -123,6 +124,9 @@ int main(int argc, char *argv[])
            char buffer[BUFFER_SIZE] = {0};
            //string stringstream;
            
+           if((childpid = fork()) == 0){
+               close(listen_socket);
+           
            while(!end){
                memset(buffer, '\0', sizeof(buffer));
                
@@ -177,7 +181,7 @@ int main(int argc, char *argv[])
                    return error;
                }
                //memset(responseMessage, '\0', sizeof(responseMessage);
-               
+            }
            }
            close(client_socket);
            
