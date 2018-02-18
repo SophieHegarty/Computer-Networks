@@ -42,16 +42,15 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    
+    int DEST_PORT;
     if ( argc != 4){
         cout << "usage: " << argv[0] << "<host> <port> <directory>\n";
     }
-    char host[BUFFER_SIZE];
-    strcpy(host,argv[1]);
-    int DEST_PORT;
-    DEST_PORT = atoi(argv[2]);
-    char dir[BUFFER_SIZE];
-    strcpy(dir,argv[3]);
+        char host[BUFFER_SIZE];
+        strcpy(host,argv[1]);
+        DEST_PORT = atoi(argv[2]);
+        char dir[BUFFER_SIZE];
+        strcpy(dir,argv[3]);
     string host_str(host);
     string dir_str(dir);
     cout << host << " " << DEST_PORT << " " << dir << endl;
@@ -141,6 +140,7 @@ int main(int argc, char *argv[])
             response.decodeURL();
             response.url_request = host_str;
             string direct = response.directory;
+        
             string newDirectory = dir_str + "/" + direct;
             cout << "dircteory: " << newDirectory;
             
